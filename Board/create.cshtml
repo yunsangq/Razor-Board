@@ -1,0 +1,64 @@
+﻿@{
+    Layout = "_master.cshtml";  
+    //값을 유지시키기 위함
+    var postSubject = "";
+    var postContent = "";
+    
+    if(IsPost)
+    {   
+        postSubject = Request.Form["txtSubject"].ToString();
+        postContent = Request.Form["txtContent"].ToString();
+        
+        if(postSubject.IsEmpty())
+        {
+            Validation.AddFormError("제목을 입력하세요");
+        }
+        if(postContent.IsEmpty())
+        {
+            Validation.AddFormError("내용을 입력하세요"); 
+        }
+        if(Validation.IsValid())
+        {
+            var db = Database.Open("BoardDB");
+            var insertQueryString = "INSERT INTO Boards(Subject ,Content) VALUES(@0 , @1)" ;
+            
+            db.Execute(insertQueryString , Request.Form["txtSubject"].ToString() , Request.Form["txtContent"].ToString() ,UrlData[0]);    
+            Response.Redirect("/index");
+            return;    
+        }
+    }
+}
+<style type="text/css">
+    #txtSubject
+    {
+        width: 678px;
+        height: 29px;
+    }
+    #txtContent
+    {
+        height: 277px;
+        width: 736px;
+    }
+</style>
+<div>Create 페이지입니다.</div>
+<div style="font-weight:bold; color:red">        
+    @Html.ValidationSummary("")    
+</div>    
+<div>
+    <form method="post" action="">
+        <!-- 글 내용 보여주기 -->
+        <div>
+            <div class="title">                                
+                <h1>제목 : <input id="txtSubject" name="txtSubject" type="text" style="font-size: 16px;font-weight:bold;"/></h1>
+            </div>
+            <div>
+                <textarea id="txtContent" name="txtContent" style="font-size: 12px;"></textarea>
+            </div>
+            <!-- 목록, 수정/삭제 버튼 -->            
+            <div class="contentButton">            
+                <a href="#" onclick="forms[0].submit();" class="btn btn-default "><span>완료</span></a>
+                <a href="/index" class="btn btn-default "><span>취소(목록으로)</span></a>
+            </div>
+        </div>
+    </form>
+</div>    

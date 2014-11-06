@@ -1,0 +1,48 @@
+﻿@{
+    Layout = "_master.cshtml";  
+    var db = Database.Open("BoardDB");
+    //사용자가 글을 읽었을때 카운트를 증가시킵니다.
+    var updateQueryString = "UPDATE Boards SET ReadCount = ReadCount + 1 where BoardIdx = " + UrlData[0];
+    db.Execute(updateQueryString);    
+    
+    //해당 글을 가져옵니다.
+    var selectQueryString = " SELECT * FROM Boards where BoardIdx = " + UrlData[0];
+    var data = db.Query(selectQueryString);
+}
+<div>
+    Read 페이지 입니다.</div>
+<div>
+    <!-- 글 내용 보여주기 -->
+           
+    <div>
+        <div class="title">
+            <h1>제목:
+                <a href="/Read/@UrlData[0]">@data.First().Subject</a></h1>
+        </div>
+        <div class="userInfo">
+            <div class="author">글쓴이 :
+                <span class="member">@data.First().Author</span></div>
+        </div>
+        <div class="dateAndCount">
+            <div class="date" title="등록일">
+                등록일 : <strong>@data.First().RegDate.ToShortDateString()</strong> @data.First().RegDate.ToShortTimeString()
+            </div>
+            <div class="readedCount" title="조회 수">
+                <a style="color: black">조회수 : </a>@data.First().ReadCount.ToString("###,###,##0")</div>
+        </div>
+        <div class="readBody">
+            <div class="contentBody">
+                <pre >@data.First().Content</pre>
+                <div style="text-align: center; width: 100%; margin: 10px;">
+                </div>                
+            </div>
+        </div>
+        <!-- 목록, 수정/삭제 버튼 -->
+        <div class="contentButton">
+            <a href="/delete/@UrlData[0]" id="btnDelete" class="btn btn-default"><span>삭제</span></a>
+            <a href="/update/@UrlData[0]" class="btn btn-default"><span>수정</span></a>
+            <a href="/index" class="btn btn-default"><span>목록</span></a>
+        </div>
+    </div>
+</div>
+    

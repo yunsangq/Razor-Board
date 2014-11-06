@@ -1,0 +1,27 @@
+﻿@{
+    Layout = "_master.cshtml";  
+    var db = Database.Open("BoardDB");
+    var selectQueryString = "SELECT * FROM Boards  order by boardidx desc";        
+    var data = db.Query(selectQueryString);
+    var grid = new WebGrid(data, rowsPerPage: 10);
+    
+}
+<div>List 페이지 입니다.</div>
+@grid.GetHtml(
+    tableStyle: "table table-striped",            
+    columns: grid.Columns(
+        grid.Column("BoardIdx", "번호",style:"num", canSort:false, format:@<text>@item.BoardIdx</text>),
+        grid.Column("Subject", "제목", style:"title", canSort:false,format:@<a href="/read/@item.BoardIdx">@item.Subject</a>),
+        grid.Column("Subject", "글쓴이", style:"author", canSort:false,format:@<text>@item.Author</text>),
+        grid.Column("Content", "날짜", style:"date", canSort:false,format:@<text>@CustomHelper.DateTimeParser(item.RegDate.ToString())</text>),
+        grid.Column("ReadCount", "조회수", style:"reading", canSort:false,format:@<text>@item.ReadCount</text>)
+    )
+)
+
+<div>
+    <!-- 글쓰기, 목록 버튼 -->
+    <div>
+        <a href="/index" class="btn btn-default "><span>목록</span></a>
+        <a href="/create" class="btn btn-default "><span>쓰기</span></a>
+    </div>
+</div>

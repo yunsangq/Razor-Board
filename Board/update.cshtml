@@ -1,0 +1,73 @@
+﻿@{
+    Layout = "_master.cshtml";  
+    var db = Database.Open("BoardDB");
+    //값을 유지시키기 위함    
+    var selectQueryString = " SELECT * FROM Boards where BoardIdx = " + UrlData[0];
+    var data = db.Query(selectQueryString);   
+    
+    var postSubject = data.First().Subject;
+    var postContent = data.First().Content;
+    
+    if(IsPost)
+    {
+        postSubject = Request.Form["txtSubject"].ToString();
+        postContent = Request.Form["txtContent"].ToString();
+        
+        if(postSubject == "")
+        {
+            Validation.AddFormError("제목을 입력하세요");   
+        }
+        if(postContent == "")
+        {
+            Validation.AddFormError("내용을 입력하세요"); 
+        }
+        if(Validation.IsValid())
+        {   
+            //업데이트 하고 Read 로 이동
+            var updateQueryString = "Update Boards SET Subject = @0 , Content = @1 WHERE BoardIdx = @2" ;
+            db.Execute(updateQueryString , Request.Form["txtSubject"].ToString() , Request.Form["txtContent"].ToString() ,UrlData[0]);    
+            Response.Redirect("/read/" + UrlData[0]);
+            return;
+        }
+    }
+    
+    //해당 글을 가져옵니다.
+    
+    
+    
+}
+<style type="text/css">
+    #txtSubject
+    {
+        width: 678px;
+        height: 29px;
+    }
+    #txtContent
+    {
+        height: 277px;
+        width: 736px;
+    }
+</style>
+<div>
+    Update 페이지입니다.</div>
+<div style="font-weight:bold; color:red">        
+    @Html.ValidationSummary("")
+</div> 
+<div>
+    <form method="post" action="">
+        <!-- 글 내용 보여주기 -->
+        <div>
+            <div class="title">                                
+                <h1>제목 : <input id="txtSubject" name="txtSubject" type="text" style="font-size: 16px;font-weight:bold;" value="@postSubject"/></h1>
+            </div>
+            <div>
+                <textarea id="txtContent" name="txtContent" style="font-size: 12px;">@postContent</textarea>
+            </div>
+            <!-- 목록, 수정/삭제 버튼 -->            
+            <div class="contentButton">            
+                <a href="#" onclick="forms[0].submit();" class="btn btn-default "><span>수정</span></a>
+                <a href="/index" class="btn btn-default "><span>취소(목록으로)</span></a>
+            </div>
+        </div>
+    </form>
+</div>    

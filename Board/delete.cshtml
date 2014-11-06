@@ -1,0 +1,7 @@
+﻿@{
+    var db = Database.Open("BoardDB");
+    var deleteQueryString = "DELETE FROM Boards WHERE BoardIdx = @0" ;
+    db.Execute(deleteQueryString , UrlData[0]);
+    Response.Redirect("/index");
+    return;    
+}
